@@ -21,6 +21,36 @@ namespace leetcode.Solutions
             this.left = left;
             this.right = right;
         }
+        public static TreeNode BuildTree(int?[] values)
+        {
+            if (values == null || values.Length == 0) return null;
+
+            TreeNode root = new TreeNode(values[0].Value);
+            Queue<TreeNode> queue = new Queue<TreeNode>();
+            queue.Enqueue(root);
+
+            int i = 1;
+            while (i < values.Length)
+            {
+                TreeNode current = queue.Dequeue();
+
+                if (values[i].HasValue)
+                {
+                    current.left = new TreeNode(values[i].Value);
+                    queue.Enqueue(current.left);
+                }
+                i++;
+
+                if (i < values.Length && values[i].HasValue)
+                {
+                    current.right = new TreeNode(values[i].Value);
+                    queue.Enqueue(current.right);
+                }
+                i++;
+            }
+
+            return root;
+        }
 
         public static bool LeafSimilar(TreeNode root1, TreeNode root2)
         {
@@ -911,6 +941,90 @@ namespace leetcode.Solutions
             }
 
             return roots;
+        }
+        public static int CountPairs(TreeNode root, int distance)
+        {
+            int count = 0;
+            int level = 0;
+            Queue<TreeNode> currentLevel = new Queue<TreeNode>();
+            Queue<TreeNode> nextLevel = new Queue<TreeNode>();
+            Dictionary<TreeNode,TreeNode> ancestors = new Dictionary<TreeNode,TreeNode>();
+            Dictionary<TreeNode, int> nodeLevel = new Dictionary<TreeNode, int>();
+            List<TreeNode> leafs = new List<TreeNode>();
+
+            if (root != null)
+            {
+                currentLevel.Enqueue(root);
+                level++;
+            }
+
+            while(currentLevel.Count > 0)
+            {
+                TreeNode currentNode = currentLevel.Dequeue();
+
+                nodeLevel.Add(currentNode, level);
+
+                int childs = 2;
+                if (currentNode.left != null)
+                {
+                    nextLevel.Enqueue(currentNode.left);
+                    ancestors.Add(currentNode.left, currentNode);
+                }
+                else
+                    childs--;
+                if (currentNode.right != null)
+                {
+                    nextLevel.Enqueue(currentNode.right);
+                    ancestors.Add(currentNode.right, currentNode);
+                }
+                else
+                    childs--;
+
+                if (childs == 0)
+                    leafs.Add(currentNode);
+
+                if(currentLevel.Count==0)
+                {
+                    currentLevel=new Queue<TreeNode>(nextLevel);
+                    nextLevel.Clear();
+                    level++;
+                }
+            }
+
+            for (int i = 0; i < leafs.Count-1;i++)
+            {
+                for(int j = i+1; j < leafs.Count;j++)
+                {
+                    int currentDistance = 0;
+                    TreeNode leftNode = leafs[i];
+                    TreeNode rightNode = leafs[j];
+
+                    while (nodeLevel[leftNode] != nodeLevel[rightNode])
+                    {
+                        if (nodeLevel[leftNode] > nodeLevel[rightNode])
+                            leftNode = ancestors[leftNode];
+                        else
+                            rightNode = ancestors[rightNode];
+
+                        currentDistance++;
+                    }
+
+                    while(currentDistance<=distance)
+                    {
+                        if (leftNode == rightNode)
+                        {
+                            count++;
+                            break;
+                        }
+
+                        leftNode = ancestors[leftNode];
+                        rightNode = ancestors[rightNode];
+                        currentDistance += 2;
+                    }
+                }
+            }    
+
+            return count;
         }
     }
 
