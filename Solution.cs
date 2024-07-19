@@ -42,48 +42,6 @@ namespace Solutions
             return maxsum;
         }
 
-        //1,1,1,0,0,0,1,1,1,1,0
-        //0,0,1,1,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1
-        //1,1,1,0,0,0,1,1,1,1,0,1,1,1,0,0,0,0,0,1,1,1,1,1,0,1
-        //public static int longestOnes(int[] nums, int k)
-        //{
-        //    int i = 0, j = -1, zeros = 0, maxLen = 0;
-        //    while(zeros < k&&j<nums.Length-1)
-        //    {
-        //        j++;
-        //        if (nums[j]==0)
-        //        {
-        //            zeros++;
-        //        }
-        //    }
-        //    if (j + 1 < nums.Length && nums[j + 1] == 1)
-        //    {
-        //        j = Array.IndexOf(nums, 0, j + 1);
-        //        if (j == -1) j = nums.Length; else j--;
-        //    }
-        //    if (j == nums.Length) return j;
-        //    else maxLen = j+1;
-        //    if (j == -1) j = 0;
-        //    while (j < nums.Length)
-        //    {
-        //        i++;
-        //        if (nums[i - 1] == 0)
-        //        {
-        //            j++;
-        //            if (j + 1 < nums.Length && nums[j + 1] == 1)
-        //            {
-        //                j = Array.IndexOf(nums, 0, j + 1);
-        //                if (j == -1) j = nums.Length; else j--;
-        //            }
-        //            if (j == nums.Length || j == i||k==0) maxLen = Math.Max(j - i, maxLen);
-        //            else maxLen = Math.Max(j-(i-1), maxLen);            
-        //        }
-
-        //    }                                    
-        //    return maxLen;
-        //}
-
-
         public static int longestOnes(int[] nums, int k)
         {
             int i = 0, j = 0, maxLen = 0;
@@ -3354,6 +3312,31 @@ namespace Solutions
             }
 
             return sum;
+        }
+        public static IList<int> LuckyNumbers(int[][] matrix)
+        {
+            int m = matrix.Length;
+            int n = matrix[0].Length;
+            int[] minRowIdx = new int[m];
+            int[] maxColIdx = new int[n];
+            IList<int> luckyNumbers = new List<int>();
+
+            for(int row = 0; row < m; row++)
+                minRowIdx[row] = Array.FindIndex(matrix[row], num => num == matrix[row].Min());
+
+            for(int col = 0; col < n; col ++)
+            {
+                List<int> columnValues = matrix.Select(row => row[col]).ToList();
+                maxColIdx[col] = columnValues.FindIndex(num=>num==columnValues.Max());
+            }
+
+            for(int i = 0; i < m; i++)
+            {
+                if (maxColIdx[minRowIdx[i]]==i)
+                    luckyNumbers.Add(matrix[i][minRowIdx[i]]);
+            }
+
+            return luckyNumbers;
         }
     }
 }
