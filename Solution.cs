@@ -3338,5 +3338,16 @@ namespace Solutions
 
             return luckyNumbers;
         }
+        public static string[] SortPeople(string[] names, int[] heights)
+        {
+            //All the values of heights are distinct.
+
+            Dictionary<int, string> peopleHeights = new Dictionary<int, string>(names.Length);
+
+            for(int i = 0; i < names.Length; i++)
+                peopleHeights.Add(heights[i], names[i]);
+
+            return peopleHeights.OrderByDescending(k => k.Key).Select(v => v.Value).ToArray();
+        }
     }
 }
