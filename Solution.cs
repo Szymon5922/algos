@@ -3349,5 +3349,40 @@ namespace Solutions
 
             return peopleHeights.OrderByDescending(k => k.Key).Select(v => v.Value).ToArray();
         }
+        public static int[] FrequencySort(int[] nums)
+        {
+            Dictionary<int, int> numsFrequency = new Dictionary<int, int>();
+            foreach (int num in nums)
+            {
+                if (numsFrequency.ContainsKey(num))
+                    numsFrequency[num]++;
+                else
+                    numsFrequency.Add(num, 1);
+            }
+
+            var groups = numsFrequency.GroupBy(kv => kv.Value)
+                .OrderBy(g => g.Key)
+                .Select(g => new
+                {
+                    Frequency = g.Key,
+                    Nums = g.OrderByDescending(kv => kv.Key)
+                });
+
+            int i = 0;
+            foreach (var group in groups)
+            {
+                int freq = group.Frequency;
+                foreach(var num in group.Nums)
+                {
+                    for(int j = 0; j<freq; j++)
+                    {
+                        nums[i] = num.Key;
+                        i++;
+                    }
+                }
+            }
+
+            return nums;
+        }
     }
 }
