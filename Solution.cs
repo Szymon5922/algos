@@ -9,6 +9,7 @@ using System.Net;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Solutions
@@ -3446,5 +3447,60 @@ namespace Solutions
             }
         }
         #endregion
+        public static int CountSeniors(string[] details)
+        {
+            int seniors = 0;
+
+            foreach(string detail in details)
+            {
+                if ((int)detail[11] > 53 && (int)detail[12] > 48)
+                    seniors++;
+            }
+
+            return seniors;
+        }
+        public static int MinSwaps(int[] nums)
+        {
+            int[] extendedNums = new int[nums.Length * 2];
+            int ones = nums.Where(n => n == 1).Count();
+
+            if (ones == nums.Length - 1)
+                return 0;
+
+            for(int i = 0; i < nums.Length;i++)
+            {
+                int num = nums[i];
+
+                extendedNums[i] = num;
+                extendedNums[i + nums.Length] = num;
+            }
+
+            int zeros = 0;
+
+            for(int i = 0; i < ones; i++)
+            {
+                if (nums[i] == 0)
+                    zeros++;
+            }
+
+            int minSwaps = zeros;
+
+            for(int left = 0, right = ones; right < extendedNums.Length-1; right++, left++)
+            {
+                if (extendedNums[right] == 1)
+                    ones++;
+                else
+                    zeros++;
+
+                if (extendedNums[left] == 0)
+                    zeros--;
+                else
+                    ones--;
+
+                minSwaps = Math.Min(minSwaps, zeros);
+            }
+
+            return minSwaps;
+        }
     }
 }
