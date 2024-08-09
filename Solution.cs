@@ -3502,5 +3502,158 @@ namespace Solutions
 
             return minSwaps;
         }
+        public static bool CanBeEqual(int[] target, int[] arr)
+        {
+            Array.Sort(target);
+            Array.Sort(arr);
+            
+            for(int i = 0; i < target.Length; i++)
+            {
+                if (target[i] != arr[i])
+                    return false;
+            }
+
+            return true;
+        }
+        public static int[][] SpiralMatrixIII(int rows, int cols, int rStart, int cStart)
+        {
+            List<int[]> res = new List<int[]>();
+            res.Add(new int[]{rStart, cStart });
+            int y = rStart;
+            int x = cStart;
+            bool[][] grid = new bool[rows][];
+            
+            for(int i = 0; i < rows; i++)
+                grid[i] = new bool[cols];
+
+            grid[y][x] = true;
+
+            int stepsRightDown = 1;
+            int stepsLeftUp = 2;
+
+            int[][] corners = new int[][] { new int[] { 0, 0 }
+                                          , new int[] { 0, cols - 1 }
+                                          , new int[] { rows - 1, 0 }
+                                          , new int[] { rows - 1, cols - 1 } };
+
+            bool allCornersVisited = false;
+
+            while(!allCornersVisited)
+            {
+                for(int i = 0; i < stepsRightDown; i++)
+                {
+                    x++;
+                    if (isPointInGrid())
+                        HandlePoint();
+                }
+                for(int i = 0; i < stepsRightDown; i++)
+                {
+                    y++;
+                    if (isPointInGrid())
+                        HandlePoint();
+                }
+                stepsRightDown +=2;
+
+                for(int i = 0; i < stepsLeftUp; i++)
+                {
+                    x--;
+                    if (isPointInGrid())
+                        HandlePoint();
+                }
+                for(int i = 0; i < stepsLeftUp; i++)
+                {
+                    y--;
+                    if (isPointInGrid())
+                        HandlePoint();
+                }
+                stepsLeftUp += 2;
+
+                allCornersVisited = AreAllCornersVisited();
+            }
+
+            bool isPointInGrid()
+            {
+                if (y >= 0 && y < rows)
+                {
+                    if (x >= 0 && x < cols)
+                        return true;
+                }
+                return false;
+            }
+
+            bool AreAllCornersVisited()
+            {
+                foreach (int[] corner in corners)
+                {
+                    if (!grid[corner[0]][corner[1]])
+                        return false;
+                }
+                return true;
+            }
+
+            void HandlePoint()
+            {
+                res.Add(new int[]{y, x});
+                grid[y][x] = true;
+            }
+
+            return res.ToArray();
+        }
+        public static int NumMagicSquaresInside(int[][] grid)
+        {
+            int magicSquares = 0;
+
+            if (grid.Length < 3 || grid[0].Length < 3)
+                return 0;
+
+            for(int i = 0; i + 2 < grid.Length; i++)
+            {
+                for(int j = 0; j + 2 < grid[0].Length; j++)
+                {
+                    bool isSquareMagic = true;
+                    int[][] square = new int[][] {new int[] { grid[i][j],  grid[i][j+1],   grid[i][j+2] }
+                                                 ,new int[] { grid[i+1][j],grid[i+1][j+1], grid[i+1][j+2] }
+                                                 ,new int[] { grid[i+2][j],grid[i+2][j+1], grid[i+2][j+2]}};
+                    if (square.SelectMany(x=>x).Distinct().Count()<9)
+                        continue;
+
+                    foreach(int[] row in square)
+                    {
+                        if (Array.FindIndex(row, n => n > 9 || n < 1) != -1||row.Sum()!=15)
+                        {
+                            isSquareMagic = false;
+                            break;
+                        }
+                    }
+                    if (!isSquareMagic)
+                        continue;
+                    
+                    for(int col = 0; col < 3; col++)
+                    {
+                        int colsum = grid[i][j + col] + grid[i + 1][j + col] + grid[i + 2][j + col];
+                        if(colsum!=15)
+                        {
+                            isSquareMagic = false;
+                            break;
+                        }
+                    }
+                    if (!isSquareMagic)
+                        continue;
+
+                    int diagonal1 = grid[i][j] + grid[i + 1][j + 1] + grid[i + 2][j + 2];
+                    if (diagonal1 != 15)
+                        continue;
+
+                    int diagonal2 = grid[i][j + 2] + grid[i + 1][j + 1] + grid[i + 2][j];
+                    if (diagonal1 != 15)
+                        continue;
+
+                    magicSquares++;
+
+                }
+            }
+            
+            return magicSquares;
+        }
     }
 }
