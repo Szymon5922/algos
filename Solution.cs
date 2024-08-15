@@ -3655,5 +3655,166 @@ namespace Solutions
             
             return magicSquares;
         }
+        public static int RegionsBySlashes (string[] grid)
+        {
+            int regions = 0;
+            int n = grid.Length*3;
+
+            bool[][] visited = new bool[n][];
+            for (int i = 0; i < n; i++)
+                visited[i] = new bool[n];
+
+            int[][] gridTransformed = new int[n][];
+            for (int i = 0; i < n; i++)
+                gridTransformed[i] = new int[n];
+
+            for(int i = 0; i < grid.Length; i++)
+            {
+                for(int j = 0; j < grid.Length;j++)
+                {
+                    if (grid[i][j] == '/')
+                        InsertForwardSlash(i * 3, j * 3);
+                    else if (grid[i][j] == '\\')
+                        InsertBackslash(i*3, j *3);
+                }
+            }
+
+            for(int i = 0; i < n; i++)
+            {
+                for(int j = 0; j < n; j++)
+                {
+                    if (gridTransformed[i][j] == 0 && !visited[i][j])
+                    { 
+                        DFS(i, j);
+                        regions++;
+                    }
+                }
+            }
+
+            return regions;
+
+            void DFS(int x, int y)
+            {
+                if (x < 0 || y < 0 || x >= n || y >= n || grid[x][y] != 0 || visited[x][y])
+                    return;
+
+                visited[x][y] = true;
+
+                DFS(x + 1, y);
+                DFS(x - 1, y);
+                DFS(x, y + 1);
+                DFS(x, y - 1);
+            }
+            void InsertBackslash(int x,int y)
+            {
+                gridTransformed[x][y] = 1;
+                gridTransformed[x+1][y+1] = 1;
+                gridTransformed[x+2][y+2] = 1;
+            }
+            void InsertForwardSlash(int x, int y)
+            {
+                gridTransformed[x][y + 2] = 1;
+                gridTransformed[x+1][y + 1] = 1;
+                gridTransformed[x+2][y] = 1;
+            }
+        }
+        public class KthLargest
+        {
+            private int _k;
+            private List<int> _nums;
+            public int kthLargest => _nums[_nums.Count - _k];
+            public KthLargest(int k, int[] nums)
+            {
+                _k = k;
+                if (nums.Length > 0)
+                {
+                    _nums = nums.ToList();
+                    _nums.Sort();
+                }
+                else
+                    _nums = new List<int>();
+            }
+
+            public int Add(int val)
+            {
+                if (_nums.Count == 0 || _nums.Max() < val)
+                    _nums.Add(val);
+                else
+                {
+                    int index = 0;
+                    while (_nums[index] < val)
+                        index++;
+
+                    _nums.Insert(index, val);
+                }
+
+                return kthLargest;
+            }
+        }
+        public static IList<IList<int>> CombinationSum2(int[] candidates, int target)
+        {
+            IList<IList<int>> res = new List<IList<int>>();
+            Array.Sort(candidates);
+            Backtrack(res, new List<int>(), candidates, target, 0);
+            return res;
+        }
+
+        private static void Backtrack(IList<IList<int>> res, List<int> tempList, int[] candidates, int remain, int start)
+        {
+            if (remain < 0)
+                return; 
+            else if (remain == 0)
+                res.Add(new List<int>(tempList)); 
+            else
+            {
+                for (int i = start; i < candidates.Length; i++)
+                {
+                    if (i > start && candidates[i] == candidates[i - 1])
+                        continue; 
+                    tempList.Add(candidates[i]);
+                    Backtrack(res, tempList, candidates, remain - candidates[i], i + 1);
+                    tempList.RemoveAt(tempList.Count - 1);
+                }
+            }
+        }
+        private static bool LemonadeChange(int[] bills)
+        {
+            int fives = 0, tens = 0;
+
+            foreach(int bill in bills)
+            {
+                if (bill == 5)
+                    fives++;
+                else if(bill == 10)
+                {
+                    if (fives < 1)
+                        return false;
+                    else
+                    {
+                        tens++;
+                        fives--;
+                    }
+                }
+                else
+                {
+                    if(fives<1)
+                        return false;
+                    if(tens<1)
+                    {
+                        if (fives < 3)
+                            return false;
+                        else
+                            fives -= 3;
+                    }
+                    else
+                    {
+                        tens--;
+                        fives--;
+                    }
+                }
+            }
+            return true;
+        }
+
     }
 }
