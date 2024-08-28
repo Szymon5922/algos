@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
+using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -3777,7 +3778,7 @@ namespace Solutions
                 }
             }
         }
-        private static bool LemonadeChange(int[] bills)
+        public static bool LemonadeChange(int[] bills)
         {
             int fives = 0, tens = 0;
 
@@ -3815,6 +3816,155 @@ namespace Solutions
             }
             return true;
         }
+        public static int MaxDistance(IList<IList<int>> arrays)
+        {
+            int minVal = int.MaxValue;
+            int maxVal = int.MinValue;
 
+            for(int i = 0; i < arrays.Count;i++)
+            {
+                int arrayMin = arrays[i][0];
+                int arrayMax = arrays[i].Last();
+
+                if (arrayMin < minVal)
+                {
+                    minVal = arrayMin;
+                }
+                else if (arrayMax>maxVal)
+                {
+                    maxVal = arrayMax;
+                }
+            }
+
+            int case1 = maxVal - minVal;
+
+            minVal = int.MaxValue;
+            maxVal = int.MinValue;
+
+            for (int i = 0; i < arrays.Count; i++)
+            {
+                int arrayMin = arrays[i][0];
+                int arrayMax = arrays[i].Last();
+
+                if (arrayMax > maxVal)
+                {
+                    maxVal = arrayMax;
+                }
+                else if (arrayMin < minVal)
+                {
+                    minVal = arrayMin;
+                }
+            }
+
+            int case2 = maxVal - minVal;
+
+            return Math.Max(case1,case2);
+        }
+        public static string LargestNumber(int[] nums)
+        {
+            var numsSorted = nums.OrderByDescending(x => x.ToString(), new MyCoparer()).ToList();
+
+            if (numsSorted.First() == '0')
+                return "0";
+
+            return string.Join("", numsSorted);
+        }
+        public class MyCoparer : IComparer<string>
+        {
+            public int Compare(string stringA, string stringB) => (stringA + stringB).CompareTo(stringB + stringA);
+        }
+        public static int NthUglyNumber(int n)
+        {
+            HashSet<int> uglyNumbers = new HashSet<int>();
+            uglyNumbers.Add(1);
+
+            for (int i = 1; i < n; i++)
+            {
+                uglyNumbers.Add(i*2);
+                uglyNumbers.Add(i*3);
+                uglyNumbers.Add(i*5);
+            }
+
+            var nums = uglyNumbers.OrderBy(x=>x).ToList();
+
+            return nums[n];
+        }
+        public static double MaxProbability(int n, int[][] edges, double[] succProb, int start_node, int end_node)
+        {
+            double[] maxProb = new double[n];
+            maxProb[start_node] = 1.0;
+
+            for (int i = 0; i < n - 1; i++)
+            {
+                bool hasUpdate = false;
+
+                for (int j = 0; j < edges.Length; j++)
+                {
+                    int u = edges[j][0];
+                    int v = edges[j][1];
+                    double pathProb = succProb[j];
+
+                    if (maxProb[u] * pathProb > maxProb[v])
+                    {
+                        maxProb[v] = maxProb[u] * pathProb;
+                        hasUpdate = true;
+                    }
+                    if (maxProb[v] * pathProb > maxProb[u])
+                    {
+                        maxProb[u] = maxProb[v] * pathProb;
+                        hasUpdate = true;
+                    }
+                }
+                if (!hasUpdate)
+                    break;
+            }
+
+            return maxProb[end_node];
+        }
+        public static int CountSubIslands(int[][] grid1, int[][] grid2)
+        {
+            int m = grid1.Length;
+            int n = grid1[0].Length;
+            int subIslands = 0;
+
+            bool[][] visited = new bool[m][];
+            for (int i = 0; i < m; i++)
+                visited[i] = new bool[n];
+
+            for(int i = 0; i < m; i++)
+            {
+                for(int j = 0; j < n; j++)
+                {
+                    if (!visited[i][j] && grid2[i][j]==1)
+                    {
+                        bool isSubIsland = false;
+                        DFS(0, 0, ref isSubIsland);
+
+                        if (isSubIsland)
+                            subIslands++;
+                    }
+                }
+            }
+
+            void DFS(int x, int y, ref bool isSub)
+            {
+                if (x < 0 || x >= m || y < 0 || y >= n || grid2[x][y] == 0 || visited[x][y])
+                    return;
+
+                isSub = true;
+
+                visited[x][y] = true;
+
+                if (grid1[x][y] == 0)
+                    isSub = false;
+
+                DFS(x + 1, y, ref isSub);
+                DFS(x, y + 1, ref isSub);
+                DFS(x - 1, y, ref isSub);
+                DFS(x, y - 1, ref isSub);
+            }
+
+            return subIslands;
+        }
     }
 }
