@@ -3937,8 +3937,8 @@ namespace Solutions
                 {
                     if (!visited[i][j] && grid2[i][j]==1)
                     {
-                        bool isSubIsland = false;
-                        DFS(0, 0, ref isSubIsland);
+                        bool isSubIsland = true;
+                        DFS(i, j, ref isSubIsland);
 
                         if (isSubIsland)
                             subIslands++;
@@ -3950,8 +3950,6 @@ namespace Solutions
             {
                 if (x < 0 || x >= m || y < 0 || y >= n || grid2[x][y] == 0 || visited[x][y])
                     return;
-
-                isSub = true;
 
                 visited[x][y] = true;
 
@@ -3965,6 +3963,440 @@ namespace Solutions
             }
 
             return subIslands;
+        }
+        public static int RemoveStones(int[][] stones)
+        {
+            int n = stones.Length;
+            UnionFind uf = new UnionFind(n);
+
+            for(int i = 0; i < n; i++)
+            {
+                for(int j = i+1; j < n;j++)
+                {
+                    if (stones[i][0] == stones[j][0] || stones[i][1] == stones[j][1])
+                        uf.Union(i, j);
+                }
+            }
+
+            return n - uf.Count;
+        }
+        private class UnionFind
+        {
+            public int[] parent;
+            public int Count;
+            public UnionFind(int n)
+            {
+                parent = new int[n];
+                Count = n;
+
+                for(int i = 0; i < n; i++)
+                    parent[i] = i;
+            }
+            public int Find(int node)
+            {
+                if (parent[node] == node)
+                    return node;
+
+                return Find(parent[node]);
+            }
+            public void Union(int node1, int node2)
+            {
+                int root1 = Find(node1);
+                int root2 = Find(node2);
+
+                if (root1 == root2)
+                    return;
+
+                parent[root1] = root2;
+                Count--;
+            }
+        }
+        private long runDijkstra(int[][] edges, int n, int source, int destination)
+        {
+            long[][] adjacentMatrix = new long[n][];
+            for (int i = 0; i < n; i++)
+                adjacentMatrix[i] = new long[n];
+
+            long[] minDistance = new long[n];
+            bool[] visited = new bool[n];
+
+            for (int i = 0; i < n; i++)
+            {
+                minDistance[i] = int.MaxValue;
+
+                for (int j = 0; j < n; j++)
+                    adjacentMatrix[i][j] = int.MaxValue;
+            }
+
+            minDistance[source] = 0;
+
+            foreach (int[] edge in edges)
+            {
+                if (edge[2] != -1)
+                    adjacentMatrix[edge[0]][edge[1]] = edge[2];
+
+                adjacentMatrix[edge[1]][edge[0]] = edge[2];
+            }
+
+            for (int i = 0; i < n; i++)
+            {
+                int nearestUnvisitedNode = -1;
+
+                for (int j = 0; j < n; j++)
+                {
+                    if (!visited[j] && (nearestUnvisitedNode == -1 || minDistance[j] < minDistance[nearestUnvisitedNode]))
+                        nearestUnvisitedNode = j;
+                }
+
+                visited[nearestUnvisitedNode] = true;
+
+                for (int v = 0; v < n; ++v)
+                {
+                    minDistance[v] = Math.Min(
+                        minDistance[v],
+                        minDistance[nearestUnvisitedNode] +
+                        adjacentMatrix[nearestUnvisitedNode][v]
+                    );
+                }
+            }
+
+            return minDistance[destination];
+        }
+        public static int RobotSim(int[] commands, int[][] obstacles)
+        {
+            int maxDistance = 0;
+            int[] robotPosition = { 0, 0 };
+            DirectionHelper directionHelper = new DirectionHelper();
+            PositionChecker pairChecker = new PositionChecker(obstacles);
+            
+            foreach(int command in commands)
+            {
+                if (command < 0)
+                    directionHelper.ChangeDirection(command);
+                else
+                {
+                    for(int i = 0; i < command; i++)
+                    {
+                        int[] nextRobotPosition = { robotPosition[0] + directionHelper.DirectionModifier[0]
+                                              , robotPosition[1] + directionHelper.DirectionModifier[1]};
+                        if (!pairChecker.Contains(nextRobotPosition))
+                        {
+                            Array.Copy(nextRobotPosition, robotPosition, 2);
+                            maxDistance = Math.Max(maxDistance, robotPosition[0] * robotPosition[0]
+                                                              + robotPosition[1] * robotPosition[1]);
+                        }
+                        else
+                            continue;
+                    }
+                }
+            }
+
+            return maxDistance;
+        }
+        private class DirectionHelper
+        {
+            private Direction CurrentDirection { get; set; }
+            public int[] DirectionModifier => GetPositionModifier();
+            public DirectionHelper()
+            {
+                CurrentDirection = Direction.NORTH;
+            }
+            public enum Direction
+            {
+                NORTH,
+                EAST,
+                SOUTH,
+                WEST
+            }
+            public void ChangeDirection(int direction)
+            {
+                if(direction==-2)
+                {
+                    switch(CurrentDirection)
+                    {
+                        case Direction.NORTH:
+                            CurrentDirection = Direction.WEST;
+                            break;
+                        case Direction.WEST:
+                            CurrentDirection = Direction.SOUTH;
+                            break;
+                        case Direction.SOUTH:
+                            CurrentDirection = Direction.EAST;
+                            break;
+                        case Direction.EAST:
+                            CurrentDirection = Direction.NORTH;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    switch(CurrentDirection)
+                    {
+                        case Direction.NORTH:
+                            CurrentDirection = Direction.EAST;
+                            break;
+                        case Direction.EAST:
+                            CurrentDirection = Direction.SOUTH;
+                            break;
+                        case Direction.SOUTH:
+                            CurrentDirection = Direction.WEST;
+                            break;
+                        case Direction.WEST:
+                            CurrentDirection = Direction.NORTH;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            private int[] GetPositionModifier()
+            {
+                switch(CurrentDirection)
+                {
+                    case Direction.NORTH:
+                        return new int[]{ 0,1};
+                    case Direction.WEST:
+                        return new int[] {-1,0};
+                    case Direction.SOUTH:
+                        return new int[] {0,-1};
+                    case Direction.EAST:
+                        return new int[] {1,0};
+                    default:
+                        return null;
+                }
+            }
+        }
+        private class PositionChecker
+        {
+            private HashSet<(int, int)> pairSet;
+            public PositionChecker(int[][] array)
+            {
+                pairSet = new HashSet<(int, int)>();
+                
+                foreach (var pair in array)
+                    pairSet.Add((pair[0], pair[1]));
+            }
+
+            public bool Contains(int[] position)
+                => pairSet.Contains((position[0], position[1]));
+        }
+        public static int[] MissingRolls(int[] rolls, int mean, int n)
+        {
+            int sum = rolls.Sum();
+
+            int remainingSum = mean * (n + rolls.Length) - sum;
+
+            if (remainingSum > 6 * n || remainingSum < n)
+                return new int[0];
+
+            int distributeMean = remainingSum / n;
+
+            int mod = remainingSum % n;
+
+            int[] nElements = new int[n];
+            for (int i = 0; i < n; i++)
+                nElements[i] = distributeMean;
+
+            for (int i = 0; i < mod; i++)
+                nElements[i]++;
+
+            return nElements;
+        }
+        public static int MinBitFlips(int start, int goal)
+        {
+            int diffBits = 0;
+
+            int xorResult = start ^ goal;
+
+            while(xorResult>0)
+            {
+                diffBits += xorResult & 1;
+                xorResult >>= 1;
+            }
+
+            return diffBits;
+        }
+        public static int CountConsistentStrings(string allowed, string[] words)
+        {
+            int count = 0;
+            HashSet<char> charsAllowed = new HashSet<char>();
+
+            foreach (char c in allowed)
+                charsAllowed.Add(c);
+
+            foreach(string word in words)
+            {
+                bool isWordConsistent = true;
+
+                foreach(char c in word)
+                {
+                    if (!charsAllowed.Contains(c))
+                    {
+                        isWordConsistent = false;
+                        break; 
+                    }
+                }
+
+                if (isWordConsistent)
+                    count++;
+            }
+
+            return count;
+        }
+        public static int LongestSubarray(int[] nums)
+        {
+            int maxSubarrayLen = 0;
+            int counter = 0;
+            int maxVal = nums.Max();
+
+            for(int i = 0; i < nums.Length; i++)
+            {
+                if (nums[i]==maxVal)
+                    counter++;
+
+                if (nums[i]!=maxVal&&counter>0)
+                {
+                    maxSubarrayLen = Math.Max(counter, maxSubarrayLen);
+                    counter = 0;
+                }
+            }
+
+            return maxSubarrayLen;
+        }
+        public static int[] XorQueries(int[] arr, int[][] queries)
+        {
+            int [] result = new int[queries.Length];
+
+            for(int i = 0; i < queries.Length; i++)
+            {
+                int xorSum = 0;
+
+                for (int j = queries[i][0]; j < queries[i][1]; j++)
+                    xorSum ^= arr[j];
+
+                result[i] = xorSum;
+            }
+
+            return result;
+        }
+        public static int FindMinDifference(IList<string> timePoints)
+        {
+            int minDifference = int.MaxValue;
+
+            int[] timeInMinutes = new int[timePoints.Count];
+
+            for(int i = 0; i < timePoints.Count; i++)
+            {
+                timeInMinutes[i] = int.Parse(timePoints[i].Substring(0, 2)) * 60
+                    + int.Parse(timePoints[i].Substring(2, 2));
+            }
+            
+            Array.Sort(timeInMinutes);
+
+            int timeDiff;
+            for(int i = 1; i < timeInMinutes.Length; i++)
+            {
+                timeDiff = timeInMinutes[i] - timeInMinutes[i - 1];
+                minDifference = Math.Min(minDifference, timeDiff);
+            }
+
+            timeDiff = timeInMinutes[0]+24*60 - timeInMinutes.Last();
+            minDifference = Math.Min(timeDiff, minDifference);
+
+            return minDifference;
+        }
+        public static string[] UncommonFromSentences(string s1, string s2)
+        {
+            List<string> words = s1.Split(' ').ToList();
+            words.AddRange(s2.Split(' ').ToList());
+
+            Dictionary<string, int> wordsOccurences = new Dictionary<string, int>();
+
+            foreach(string word in words)
+            {
+                if (!wordsOccurences.ContainsKey(word))
+                    wordsOccurences.Add(word, 0);
+
+                wordsOccurences[word]++;
+            }
+
+            return wordsOccurences.Where(x => x.Value == 1).Select(x => x.Key).ToArray();
+        }
+        public static string LargestNumber2(int[] nums)
+        {
+            CustomComparer comparer = new CustomComparer();
+            
+            Array.Sort(nums, comparer);
+
+            if (nums[0] == 0)
+                return "0";
+
+            string result = "";
+
+            foreach (int num in nums)
+                result += num.ToString();
+
+            return result;
+        }
+        public class CustomComparer : IComparer<int>
+        {
+            public int Compare(int x, int y)
+            {
+                string xAsString = x.ToString();
+                string yAsString = y.ToString();
+
+                int len = Math.Min(xAsString.Length, yAsString.Length);
+
+                for(int i = 0; i < len; i++)
+                {
+                    if (xAsString[i] > yAsString[i])
+                        return -1;
+                    else if (xAsString[i] < yAsString[i])
+                        return 1;
+                }
+
+                if (xAsString.Length > yAsString.Length)
+                {
+                    if (xAsString[yAsString.Length] > yAsString.Last())
+                        return -1;
+                    else
+                        return 1;
+                }
+                else if (yAsString.Length > xAsString.Length)
+                {
+                    if (yAsString[xAsString.Length] > xAsString.Last())
+                        return 1;
+                    else
+                        return -1;
+                }
+                else
+                    return 0;
+            }
+        }
+        public static IList<int> LexicalOrder(int n)
+        {
+            IList<int> numbers = new List<int>(n);
+
+            int currentNumber = 1;
+
+            for(int i = 0; i < n; ++i)
+            {
+                numbers.Add(currentNumber);
+
+                if (currentNumber * 10 <= n)
+                    currentNumber *= 10;
+                else
+                {
+                    while (currentNumber % 10 == 9 || currentNumber >= n)
+                        currentNumber /= 10;
+
+                    currentNumber++;
+                }
+            }
+
+            return numbers;
         }
     }
 }

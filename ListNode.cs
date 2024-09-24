@@ -278,6 +278,67 @@ namespace leetcode.Solutions
             else
                 return new int[] { -1, -1 };
         }
+        public static ListNode ModifiedList (int[] nums,ListNode head)
+        {
+            HashSet<int> numsToDelete = new HashSet<int>(nums);
+            ListNode node = head;
+
+            while(node != null)
+            {
+                ListNode nextNode = node.next;
+             
+                while(nextNode!=null&&numsToDelete.Contains(nextNode.val))
+                    nextNode = nextNode.next;
+
+                node.next = nextNode;
+
+                node = node.next;
+            }
+
+            if(numsToDelete.Contains(head.val))
+                head = head.next;
+
+            return head;
+        }
+        public static ListNode[] SplitListsToParts(ListNode head, int k)
+        {
+            int nodesCount = 0;
+            ListNode node = head;
+            ListNode[] parts = new ListNode[k];
+
+            // Liczenie liczby węzłów w liście
+            while (node != null)
+            {
+                nodesCount++;
+                node = node.next;
+            }
+
+            int nodesPerPart = nodesCount / k; // Ilość węzłów w każdej części
+            int additionalPartsCount = nodesCount % k; // Ilość części z dodatkowym węzłem
+
+            node = head;
+            for (int i = 0; i < k; i++)
+            {
+                ListNode currentHead = node;
+                int currentPartSize = nodesPerPart + (i < additionalPartsCount ? 1 : 0); // Rozmiar bieżącej części
+
+                for (int j = 0; j < currentPartSize - 1; j++)
+                {
+                    if (node != null) node = node.next;
+                }
+
+                if (node != null)
+                {
+                    ListNode nextPartHead = node.next;
+                    node.next = null; // Oddziel aktualną część
+                    node = nextPartHead;
+                }
+
+                parts[i] = currentHead; // Dodaj bieżącą część do wynikowej tablicy
+            }
+
+            return parts;
+        }
     }
 
 
