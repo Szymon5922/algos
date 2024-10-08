@@ -4375,28 +4375,149 @@ namespace Solutions
                     return 0;
             }
         }
-        public static IList<int> LexicalOrder(int n)
+        public  static int LongestCommonPrefix(int[] arr1, int[] arr2)
         {
-            IList<int> numbers = new List<int>(n);
+            int longestCommonPrefix = 0;
 
-            int currentNumber = 1;
+            HashSet<string> prefixes = new HashSet<string>();
 
-            for(int i = 0; i < n; ++i)
+            foreach(int num in arr1)
             {
-                numbers.Add(currentNumber);
+                string numStringRepresentation = num.ToString();
+                StringBuilder prefix = new StringBuilder();
+                
 
-                if (currentNumber * 10 <= n)
-                    currentNumber *= 10;
-                else
+                foreach(char c in numStringRepresentation)
                 {
-                    while (currentNumber % 10 == 9 || currentNumber >= n)
-                        currentNumber /= 10;
-
-                    currentNumber++;
+                    prefix.Append(c);
+                    prefixes.Add(prefix.ToString());
                 }
             }
 
-            return numbers;
+            foreach(int num in arr2)
+            {
+                string numStringRepresentation = num.ToString();
+                StringBuilder prefix = new StringBuilder();
+
+                foreach(char c in numStringRepresentation)
+                {
+                    prefix.Append(c);
+
+                    if(prefixes.Contains(prefix.ToString()))
+                        longestCommonPrefix = Math.Max(longestCommonPrefix, prefix.Length);
+                }
+            }
+
+            return longestCommonPrefix;
+        }
+        public class MyCalendar
+        {
+            private SortedSet<(int start, int end)> _events;
+            public MyCalendar()
+            {
+                _events = new SortedSet<(int start, int end)>();
+            }
+            public bool Book(int start,int end)
+            {
+                bool canBeBooked = true;
+                
+                foreach(var eventTime in _events)
+                {
+                    if (Between(start, eventTime) || Between(end, eventTime))
+                        canBeBooked = false;
+
+                    else if (Contains((start, end), eventTime))
+                        canBeBooked = false;
+                }
+
+                if (canBeBooked)
+                    _events.Add((start, end));
+
+                return canBeBooked;
+            }
+            public bool Between(int num, (int start,int end) eventTime)
+            {
+                if (num >= eventTime.start && num <= eventTime.end)
+                    return true;
+                
+                return false;
+            }
+            public bool Contains((int start,int end) newEventTime,(int start,int end) EventTime)
+            {
+                if (newEventTime.start <= EventTime.start && newEventTime.end >= EventTime.end)
+                    return true;
+
+                return false;
+            }
+        }
+        public class CustomStack
+        {
+            private int[] values;
+            private int index = 0;
+            public CustomStack(int maxSize)
+            {
+                values = new int[maxSize];
+            }
+            public void Push(int x)
+            {
+                if (index < values.Length)
+                {
+                    values[index] = x;
+                    index++;
+                }
+            }
+            public int Pop()
+            {
+                if (index > -1)
+                {
+                    index--;
+                    return values[index + 1];
+                }
+                else
+                    return -1;
+            }
+            public void Increment(int k, int val)
+            {
+                k = Math.Min(k, index);
+
+                for(int i = 0; i < k; i++)
+                    values[i] += val;
+            }
+        }
+        public static int MinSwaps(string s)
+        {
+            char[] brakcets = s.ToCharArray();
+            int swaps = 0;
+            int indexOfLastOpening = brakcets.Length - 1;
+            int openingBrackets = 0;
+            int closingBrackets = 0;
+
+            for(int i = 0; i < brakcets.Length; i++)
+            {
+                if (brakcets[i] == '[')
+                    openingBrackets++;
+                else
+                    closingBrackets++;
+
+                if (closingBrackets > openingBrackets)
+                {
+                    
+                    for(int j = indexOfLastOpening-1;j>-1;j--)
+                    {
+                        if (brakcets[j] == '[')
+                            indexOfLastOpening = j;
+                    }
+
+                    brakcets[i] = '[';
+                    brakcets[indexOfLastOpening] = ']';
+
+                    openingBrackets++;
+                    closingBrackets--;
+                    swaps++;
+                }
+            }
+
+            return swaps;
         }
     }
 }
