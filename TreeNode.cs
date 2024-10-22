@@ -1026,6 +1026,44 @@ namespace leetcode.Solutions
 
             return count;
         }
+        public static long KthLargestLevelSum(TreeNode root, int k)
+        {
+            List<long> levelsSums = new List<long>();
+            Queue<TreeNode> currentLevel = new Queue<TreeNode>();
+            Queue<TreeNode> nextLevel = new Queue<TreeNode>();
+
+            nextLevel.Enqueue(root);
+
+            while (nextLevel.Count > 0)
+            {
+                long levelSum = 0;
+                currentLevel = new Queue<TreeNode>(nextLevel);
+                nextLevel.Clear();
+
+                while(currentLevel.Count > 0)
+                {
+                    TreeNode node = currentLevel.Dequeue();
+
+                    levelSum += node.val;
+
+                    if(node.left != null)
+                        nextLevel.Enqueue(node.left);
+                    if (node.right != null)
+                        nextLevel.Enqueue(node.right);
+                }
+
+                levelsSums.Add(levelSum);
+            }
+
+            try
+            {
+                return levelsSums.OrderByDescending(x => x).Skip(k-1).First();
+            }
+            catch
+            {
+                return -1;
+            }
+        }
     }
 
 

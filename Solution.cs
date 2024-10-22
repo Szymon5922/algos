@@ -4519,5 +4519,28 @@ namespace Solutions
 
             return swaps;
         }
+        public static int MinGroups(int[][] intervals)
+        {
+            int max = intervals.Select(i => i[1]).Max();
+
+            int[] line = new int[max + 2];
+
+            foreach (int[] interval in intervals)
+            {
+                line[interval[0]]++;
+                line[interval[1] + 1]--;
+            }
+
+            int maxOverlap = 0;
+            int currOverlap = 0;
+
+            for(int i = 0;i < max; i++)
+            {
+                currOverlap += line[i];
+                maxOverlap = Math.Max(currOverlap, maxOverlap);
+            }
+
+            return maxOverlap;
+        }
     }
 }
