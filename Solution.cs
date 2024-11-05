@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -4541,6 +4542,34 @@ namespace Solutions
             }
 
             return maxOverlap;
+        }
+        public static int MinChanges(string s)
+        {
+            int changes = 0;
+
+            for(int i = 0; i < s.Length-1; i++)
+            {
+                if (s[i] != s[i+1])
+                    changes++;
+            }
+
+            return changes;
+        }
+        public static string CompressedString(string word)
+        {
+            StringBuilder comp = new StringBuilder();
+            char currentChar;
+
+            for(int i = 0; i < word.Length; i++)
+            {
+                currentChar = word[i];
+                int counter = 1;
+
+                if()
+
+            }
+
+            return comp.ToString();
         }
     }
 }
