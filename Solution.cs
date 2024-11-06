@@ -4560,16 +4560,63 @@ namespace Solutions
             StringBuilder comp = new StringBuilder();
             char currentChar;
 
-            for(int i = 0; i < word.Length; i++)
+            for (int i = 0; i < word.Length; i++)
             {
                 currentChar = word[i];
-                int counter = 1;
 
-                if()
+                for (int j = 1; ; j++, i++)
+                {
+                    if (j == 9 || i == word.Length - 1 || word[i + 1] != currentChar)
+                    {
+                        comp.Append($"{j}{currentChar}");
+                        break;
+                    }
+                }
+            }
+            return comp.ToString();
+        }
+        public static bool CanSortArray(int[] nums)
+        {
+            List<(int num,int setBits)> numBits = new List<(int,int)>();
 
+            foreach(int num in nums)
+            {
+                string bits = Convert.ToString(num, 2);
+                int setBits = bits.Where(b => b == '1').Count();
+
+                numBits.Add((num, setBits));
             }
 
-            return comp.ToString();
+            var numsBySetBits = new List<List<(int num,int setBits)>>();
+            var currentNumsGroup = new List<(int num, int setBits)>();
+            var currentSetBitsCount = numBits.First().setBits;
+            currentNumsGroup.Add(numBits.First());
+
+            for(int i = 1; i < numBits.Count; i++)
+            {
+                if (numBits[i].setBits != currentSetBitsCount)
+                {
+                    numsBySetBits.Add(currentNumsGroup);
+
+                    currentNumsGroup = new List<(int num, int setBits)> { numBits[i] };
+                    currentSetBitsCount = numBits[i].setBits;
+                }
+                else
+                    currentNumsGroup.Add(numBits[i]);
+            }
+            if(currentNumsGroup.Any())
+                numsBySetBits.Add(currentNumsGroup);
+
+            for (int i = 0; i < numsBySetBits.Count-1; i++)
+            {
+                int maxCurrentGroup = numsBySetBits[i].Max(n=> n.num);
+                int minNextGroup = numsBySetBits[i + 1].Min(n => n.num);
+
+                if (maxCurrentGroup > minNextGroup)
+                    return false;
+            }
+
+            return true;
         }
     }
 }
