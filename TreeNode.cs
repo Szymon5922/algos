@@ -1064,6 +1064,39 @@ namespace leetcode.Solutions
                 return -1;
             }
         }
+        public static IList<int> LargestValues(TreeNode root)
+        {
+            List<int> largestValues = new List<int>();
+            Queue<TreeNode> currentlevel = new Queue<TreeNode> ();
+            Queue<TreeNode> nextLevel = new Queue<TreeNode> ();
+
+            nextLevel.Enqueue(root);
+
+            while(nextLevel.Any())
+            {
+                int currentLevelMax = 0;
+
+                currentlevel = new Queue<TreeNode>(nextLevel);
+                nextLevel.Clear();
+
+                while(currentlevel.Any())
+                {
+                    var node = currentlevel.Dequeue();
+
+                    currentLevelMax = Math.Max(currentLevelMax, node.val);
+
+                    if (node.left != null)
+                        nextLevel.Enqueue(node.left);
+
+                    if (node.right != null)
+                        nextLevel.Enqueue(node.right);
+                }
+
+                largestValues.Add(currentLevelMax);
+            }
+
+            return largestValues;
+        }
     }
 
 
