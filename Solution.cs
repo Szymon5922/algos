@@ -5191,5 +5191,234 @@ namespace Solutions
 
             return isFirstOneOriginalValid || isFirstZeroOriginalValid;
         }
+        public static int FirstCompleteIndex(int[] arr, int[][] mat)
+        {
+            int m = mat.Length;
+            int n = mat[0].Length;
+            List<int> paint = arr.ToList();
+            (int row, int col)[] occurenceIndexes = new (int, int)[arr.Length];
+            int[] rowScore = new int[m];
+            int[] colScore = new int[n];
+
+            for(int row = 0; row < m; row++)
+            {
+                for(int col = 0; col < n; col++)
+                    occurenceIndexes[paint.IndexOf(mat[row][col])]=(row,col);
+            }
+
+            for(int i = 0; i < occurenceIndexes.Length; i++)
+            {
+                int row = occurenceIndexes[i].row;
+                int col = occurenceIndexes[i].col;
+
+                rowScore[row]++;
+                colScore[col]++;
+
+                if (rowScore[row] == n || colScore[col] == m)
+                    return i;
+            }
+            
+            return 0;
+        }
+        public static int[][] HighestPeak(int[][] isWater)
+        {
+            int m = isWater.Length;
+            int n = isWater[0].Length;
+            int[][] groundLevel = new int[m][];
+            bool[][] visited = new bool[m][];
+            Queue<(int row, int col)> nextPositions = new Queue<(int, int)>();
+
+            for (int i = 0; i < m; i++)
+            {
+                groundLevel[i] = new int[n];
+                visited[i] = new bool[n];
+            }
+
+            for(int i = 0; i < m; i++)
+            {
+                for(int j = 0; j < n; j++)
+                {
+                    if (isWater[i][j] == 1)
+                    {
+                        nextPositions.Enqueue((i, j));
+                        visited[i][j] = true;
+                    }
+                }
+            }
+
+            int level = 0;
+
+            while(nextPositions.Any())
+            {
+                Queue<(int row, int col)> positions = new Queue<(int row, int col)>(nextPositions);
+                nextPositions.Clear();
+
+                while(positions.Any())
+                {
+                    var position = positions.Dequeue();
+
+                    int row = position.row;
+                    int col = position.col;
+                    
+                    groundLevel[row][col] = level;
+
+                    if (row - 1 >= 0 && !visited[row - 1][col])
+                    { 
+                        nextPositions.Enqueue((row - 1, col));
+                        visited[row - 1][col] = true;
+                    }
+
+                    if (row + 1 < m && !visited[row + 1][col])
+                    {
+                        nextPositions.Enqueue((row + 1, col));
+                        visited[row + 1][col] = true;
+                    }
+
+                    if (col - 1 >= 0 && !visited[row][col-1])
+                    {
+                        nextPositions.Enqueue((row, col - 1));
+                        visited[row][col - 1] = true;
+                    }
+
+                    if (col + 1 < n && !visited[row][col+1])
+                    {
+                        nextPositions.Enqueue((row, col + 1));
+                        visited[row][col + 1] = true;
+                    }
+                }
+
+                level++;
+            }
+
+            return groundLevel;
+        }
+        public static int CountServers(int[][] grid)
+        {
+            int m = grid.Length;
+            int n = grid[0].Length;
+
+            int[] rowScore = new int[m];
+            int[] colScore = new int[n];
+
+            for(int i = 0; i < m; i++)
+            {
+                for(int j = 0; j < n; j++)
+                {
+                    if (grid[i][j]==1)
+                    {
+                        rowScore[i]++;
+                        colScore[j]++;
+                    }    
+                }
+            }
+
+            int sum = rowScore.Sum();
+
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (grid[i][j]==1)
+                    {
+                        if (rowScore[i] == 1 && colScore[j] == 1)
+                            sum--;
+                    }
+                }
+            }
+
+            return sum;
+        }
+
+        public static IList<bool> CheckIfPrerequisite(int numCourses, int[][] prerequisites, int[][] queries)
+        {
+            IList<bool> hasPath = new List<bool>();
+
+            bool[][] isPrerequisite = new bool[numCourses][];
+            
+            for(int i = 0; i < numCourses; i++)
+                isPrerequisite[i] = new bool[numCourses];
+
+            foreach (int[] prerequisite in prerequisites)
+                isPrerequisite[prerequisite[0]][prerequisite[1]] = true;
+
+            for(int intermediate = 0; intermediate < numCourses; intermediate++)
+            {
+                for(int src = 0; src < numCourses; src++)
+                {
+                    for(int target = 0; target < numCourses; target++)
+                    {
+                        bool prerequisite = isPrerequisite[src][target] ||
+                            (isPrerequisite[src][intermediate] && isPrerequisite[intermediate][target]);
+
+                        isPrerequisite[src][target] = prerequisite;
+                    }
+                }
+            }
+
+            foreach (int[] query in queries)
+                hasPath.Add(isPrerequisite[query[0]][query[1]]);
+
+            return hasPath;
+        }
+        public static int FindMaxFish(int[][] grid)
+        {
+            int m = grid.Length;
+            int n = grid[0].Length;
+
+            int maxFish = 0;
+
+            bool[][] visited = new bool[m][];
+            for (int i = 0; i < m; i++)
+                visited[i] = new bool[n];
+
+            for(int i = 0; i < m; i++)
+            {
+                for(int j = 0; j < n; j++)
+                {
+                    if (grid[i][j] > 0 && !visited[i][j])
+                    {
+                        int fish = 0;
+                        visited[i][j] = true;
+                        
+                        Stack<(int row, int col)> cells = new Stack<(int, int)>();
+                        cells.Push((i, j));
+                        
+                        while(cells.Any())
+                        {
+                            var currentCell = cells.Pop();
+                            int row = currentCell.row;
+                            int col = currentCell.col;
+
+                            fish += grid[row][col];
+
+                            if (row - 1 > 0 && !visited[row - 1][col] && grid[row - 1][col] > 0)
+                            { 
+                                cells.Push((row - 1, col));
+                                visited[row - 1][col] = true;
+                            }
+                            if (row + 1 < m && !visited[row + 1][col] && grid[row + 1][col] > 0)
+                            {
+                                cells.Push((row + 1, col));
+                                visited[row + 1][col] = true;
+                            }
+                            if (col - 1 > 0 && !visited[row][col - 1] && grid[row][col - 1] > 0)
+                            {
+                                cells.Push((row, col - 1));
+                                visited[row][col - 1] = true;
+                            }
+                            if (col + 1 < n && !visited[row][col + 1] && grid[row][col + 1] > 0)
+                            { 
+                                cells.Push((row, col + 1));
+                                visited[row][col + 1] = true;
+                            }
+                        }
+
+                        maxFish = Math.Max(maxFish, fish);
+                    }
+                }
+            }
+
+            return maxFish;
+        }
     }
 }
