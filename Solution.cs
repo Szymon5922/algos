@@ -5391,7 +5391,7 @@ namespace Solutions
 
                             fish += grid[row][col];
 
-                            if (row - 1 > 0 && !visited[row - 1][col] && grid[row - 1][col] > 0)
+                            if (row - 1 >= 0 && !visited[row - 1][col] && grid[row - 1][col] > 0)
                             { 
                                 cells.Push((row - 1, col));
                                 visited[row - 1][col] = true;
@@ -5401,7 +5401,7 @@ namespace Solutions
                                 cells.Push((row + 1, col));
                                 visited[row + 1][col] = true;
                             }
-                            if (col - 1 > 0 && !visited[row][col - 1] && grid[row][col - 1] > 0)
+                            if (col - 1 >= 0 && !visited[row][col - 1] && grid[row][col - 1] > 0)
                             {
                                 cells.Push((row, col - 1));
                                 visited[row][col - 1] = true;
@@ -5419,6 +5419,120 @@ namespace Solutions
             }
 
             return maxFish;
+        }
+        public static int LargestIsland(int[][] grid)
+        {
+            int maxIslandSize = 0;
+            int m = grid.Length;
+            int n = grid[0].Length;
+            Dictionary<int, int> islandScore = new Dictionary<int, int>();
+            var data = GetData(grid);
+
+            if (data.waters.Count == 0)
+                return m * n;
+
+            foreach (var island in data.islands)
+            {
+                islandScore.Add(island.Key, island.Value.Count());
+
+                foreach(var cell in island.Value)
+                    grid[cell.row][cell.col] = island.Key;
+            }
+
+            foreach (var water in data.waters)
+            {
+                int possibleScore = 0;
+                HashSet<int> usedIslands = new HashSet<int>();
+                int row = water.row;
+                int col = water.col;
+
+                if (row - 1 >= 0 && grid[row - 1][col] != 0)
+                {
+                    usedIslands.Add(grid[row - 1][col]);
+                }
+                if (row + 1 < m && grid[row + 1][col] != 0)
+                {
+                    usedIslands.Add(grid[row + 1][col]);
+                }
+                if (col - 1 >= 0 && grid[row][col - 1] != 0)
+                {
+                    usedIslands.Add(grid[row][col - 1]);
+                }
+                if (col + 1 < n && grid[row][col + 1] != 0)
+                {
+                    usedIslands.Add(grid[row][col + 1]);
+                }
+
+                foreach (int islandKey in usedIslands)
+                    possibleScore += islandScore[islandKey]; 
+
+                maxIslandSize = Math.Max(maxIslandSize, possibleScore);
+            }
+
+            return maxIslandSize + 1;
+        }        
+        private static (List<(int row, int col)> waters, Dictionary<int, HashSet<(int row, int col)>> islands) GetData(int[][] grid)
+        {
+            int m = grid.Length;
+            int n = grid[0].Length;
+            var islands = new Dictionary<int, HashSet<(int, int)>>();
+            var water = new List<(int, int)>();
+
+            bool[][] visited = new bool[m][];
+            for (int i = 0; i < m; i++)
+                visited[i] = new bool[n];
+
+            int id = 1;
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (grid[i][j] == 1 && !visited[i][j])
+                    {
+                        Stack<(int row, int col)> cells = new Stack<(int, int)>();
+                        HashSet<(int, int)> island = new HashSet<(int, int)>();
+
+                        cells.Push((i, j));
+                        visited[i][j] = true;
+
+                        while (cells.Any())
+                        {
+                            var current = cells.Pop();
+                            island.Add(current);
+                            int row = current.row;
+                            int col = current.col;
+
+                            if (row - 1 >= 0 && !visited[row - 1][col] && grid[row - 1][col] == 1)
+                            {
+                                cells.Push((row - 1, col));
+                                visited[row - 1][col] = true;
+                            }
+                            if (row + 1 < m && !visited[row + 1][col] && grid[row + 1][col] == 1)
+                            {
+                                cells.Push((row + 1, col));
+                                visited[row + 1][col] = true;
+                            }
+                            if (col - 1 >= 0 && !visited[row][col - 1] && grid[row][col - 1] == 1)
+                            {
+                                cells.Push((row, col - 1));
+                                visited[row][col - 1] = true;
+                            }
+                            if (col + 1 < n && !visited[row][col + 1] && grid[row][col + 1] == 1)
+                            {
+                                cells.Push((row, col + 1));
+                                visited[row][col + 1] = true;
+                            }
+                        }
+
+                        islands.Add(id, island);
+                        id++;
+                    }
+                    else if (grid[i][j] == 0)
+                        water.Add((i, j));
+                }
+            }
+
+            return (water, islands);
         }
     }
 }
