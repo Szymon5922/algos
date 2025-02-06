@@ -4963,9 +4963,9 @@ namespace Solutions
         {
             List<string> machingStrings = new List<string>();
 
-            for(int i = 0; i < words.Length; i++)
+            for (int i = 0; i < words.Length; i++)
             {
-                for(int j = 0; j < words.Length; j++)
+                for (int j = 0; j < words.Length; j++)
                 {
                     if (j == i)
                         continue;
@@ -5008,7 +5008,7 @@ namespace Solutions
             }
             public void AddBack(int num)
             {
-                if(num<_currentNumber)
+                if (num < _currentNumber)
                     _addedNumbers.Add(num);
             }
         }
@@ -5016,10 +5016,10 @@ namespace Solutions
         {
             int counter = 0;
 
-            for(int i = 0; i <  words.Length-1; i++)
+            for (int i = 0; i < words.Length - 1; i++)
             {
                 string str1 = words[i];
-                for(int j = i+1; j < words.Length; j++)
+                for (int j = i + 1; j < words.Length; j++)
                 {
                     if (isPrefixAndSuffix(str1, words[j]))
                         counter++;
@@ -5030,7 +5030,7 @@ namespace Solutions
 
             bool isPrefixAndSuffix(string str1, string str2)
             {
-                if(str2.StartsWith(str1))
+                if (str2.StartsWith(str1))
                 {
                     if (str2.EndsWith(str1))
                         return true;
@@ -5043,7 +5043,7 @@ namespace Solutions
         {
             int counter = 0;
 
-            foreach(string word in words)
+            foreach (string word in words)
             {
                 if (word.StartsWith(pref))
                     counter++;
@@ -5051,14 +5051,14 @@ namespace Solutions
 
             return counter;
         }
-        public static bool CanConstruct (string s, int k)
+        public static bool CanConstruct(string s, int k)
         {
             if (s.Length < k)
                 return false;
 
             Dictionary<char, int> letterOccurences = new Dictionary<char, int>();
 
-            foreach(char c in s)
+            foreach (char c in s)
             {
                 if (!letterOccurences.ContainsKey(c))
                     letterOccurences.Add(c, 1);
@@ -5072,7 +5072,7 @@ namespace Solutions
 
             if (oddOccurencesCount > k)
                 return false;
-            
+
             return true;
         }
         public static bool CanBeValid(string s, string locked)
@@ -5086,13 +5086,13 @@ namespace Solutions
             Stack<int> unlocked = new Stack<int>();
             Stack<int> openBrackets = new Stack<int>();
 
-            for(int i = 0; i < s.Length; i++)
+            for (int i = 0; i < s.Length; i++)
             {
                 if (locked[i] == '0')
                     unlocked.Push(i);
                 else if (s[i] == '(')
                     openBrackets.Push(i);
-                else if (s[i] ==')')
+                else if (s[i] == ')')
                 {
                     if (openBrackets.Any())
                         openBrackets.Pop();
@@ -5103,7 +5103,7 @@ namespace Solutions
                 }
             }
 
-            while(openBrackets.Any()&&!unlocked.Any()&&openBrackets.Peek()<unlocked.Peek());
+            while (openBrackets.Any() && !unlocked.Any() && openBrackets.Peek() < unlocked.Peek()) ;
             {
                 openBrackets.Pop();
                 unlocked.Pop();
@@ -5120,7 +5120,7 @@ namespace Solutions
             Dictionary<char, int> letterOccurences = new Dictionary<char, int>();
 
 
-            foreach(char c in s)
+            foreach (char c in s)
             {
                 if (!letterOccurences.ContainsKey(c))
                     letterOccurences.Add(c, 0);
@@ -5128,9 +5128,9 @@ namespace Solutions
                 letterOccurences[c]++;
             }
 
-            foreach(int occurences in letterOccurences.Values)
+            foreach (int occurences in letterOccurences.Values)
             {
-                if(occurences>2)
+                if (occurences > 2)
                 {
                     if (occurences % 2 == 0)
                         minLength += 2;
@@ -5139,8 +5139,8 @@ namespace Solutions
                 }
 
                 minLength += occurences;
-            }    
-            
+            }
+
             return minLength;
         }
         public static int[] FindThePrefixCommonArray(int[] A, int[] B)
@@ -5168,7 +5168,7 @@ namespace Solutions
 
                 prefixCommonArray[i] = commonPrefix;
             }
- 
+
             return prefixCommonArray;
         }
         public static bool DoesValidArrayExist(int[] derived)
@@ -5177,8 +5177,8 @@ namespace Solutions
             int[] original = new int[n];
             original[0] = 0;
 
-            for(int i = 0; i < n; i++)
-                original[i+1] = derived[i] ^ original[i];
+            for (int i = 0; i < n; i++)
+                original[i + 1] = derived[i] ^ original[i];
 
             bool isFirstZeroOriginalValid = original.First() == original.Last();
 
@@ -5200,13 +5200,13 @@ namespace Solutions
             int[] rowScore = new int[m];
             int[] colScore = new int[n];
 
-            for(int row = 0; row < m; row++)
+            for (int row = 0; row < m; row++)
             {
-                for(int col = 0; col < n; col++)
-                    occurenceIndexes[paint.IndexOf(mat[row][col])]=(row,col);
+                for (int col = 0; col < n; col++)
+                    occurenceIndexes[paint.IndexOf(mat[row][col])] = (row, col);
             }
 
-            for(int i = 0; i < occurenceIndexes.Length; i++)
+            for (int i = 0; i < occurenceIndexes.Length; i++)
             {
                 int row = occurenceIndexes[i].row;
                 int col = occurenceIndexes[i].col;
@@ -5217,7 +5217,7 @@ namespace Solutions
                 if (rowScore[row] == n || colScore[col] == m)
                     return i;
             }
-            
+
             return 0;
         }
         public static int[][] HighestPeak(int[][] isWater)
@@ -5234,9 +5234,9 @@ namespace Solutions
                 visited[i] = new bool[n];
             }
 
-            for(int i = 0; i < m; i++)
+            for (int i = 0; i < m; i++)
             {
-                for(int j = 0; j < n; j++)
+                for (int j = 0; j < n; j++)
                 {
                     if (isWater[i][j] == 1)
                     {
@@ -5248,22 +5248,22 @@ namespace Solutions
 
             int level = 0;
 
-            while(nextPositions.Any())
+            while (nextPositions.Any())
             {
                 Queue<(int row, int col)> positions = new Queue<(int row, int col)>(nextPositions);
                 nextPositions.Clear();
 
-                while(positions.Any())
+                while (positions.Any())
                 {
                     var position = positions.Dequeue();
 
                     int row = position.row;
                     int col = position.col;
-                    
+
                     groundLevel[row][col] = level;
 
                     if (row - 1 >= 0 && !visited[row - 1][col])
-                    { 
+                    {
                         nextPositions.Enqueue((row - 1, col));
                         visited[row - 1][col] = true;
                     }
@@ -5274,13 +5274,13 @@ namespace Solutions
                         visited[row + 1][col] = true;
                     }
 
-                    if (col - 1 >= 0 && !visited[row][col-1])
+                    if (col - 1 >= 0 && !visited[row][col - 1])
                     {
                         nextPositions.Enqueue((row, col - 1));
                         visited[row][col - 1] = true;
                     }
 
-                    if (col + 1 < n && !visited[row][col+1])
+                    if (col + 1 < n && !visited[row][col + 1])
                     {
                         nextPositions.Enqueue((row, col + 1));
                         visited[row][col + 1] = true;
@@ -5300,15 +5300,15 @@ namespace Solutions
             int[] rowScore = new int[m];
             int[] colScore = new int[n];
 
-            for(int i = 0; i < m; i++)
+            for (int i = 0; i < m; i++)
             {
-                for(int j = 0; j < n; j++)
+                for (int j = 0; j < n; j++)
                 {
-                    if (grid[i][j]==1)
+                    if (grid[i][j] == 1)
                     {
                         rowScore[i]++;
                         colScore[j]++;
-                    }    
+                    }
                 }
             }
 
@@ -5318,7 +5318,7 @@ namespace Solutions
             {
                 for (int j = 0; j < n; j++)
                 {
-                    if (grid[i][j]==1)
+                    if (grid[i][j] == 1)
                     {
                         if (rowScore[i] == 1 && colScore[j] == 1)
                             sum--;
@@ -5334,18 +5334,18 @@ namespace Solutions
             IList<bool> hasPath = new List<bool>();
 
             bool[][] isPrerequisite = new bool[numCourses][];
-            
-            for(int i = 0; i < numCourses; i++)
+
+            for (int i = 0; i < numCourses; i++)
                 isPrerequisite[i] = new bool[numCourses];
 
             foreach (int[] prerequisite in prerequisites)
                 isPrerequisite[prerequisite[0]][prerequisite[1]] = true;
 
-            for(int intermediate = 0; intermediate < numCourses; intermediate++)
+            for (int intermediate = 0; intermediate < numCourses; intermediate++)
             {
-                for(int src = 0; src < numCourses; src++)
+                for (int src = 0; src < numCourses; src++)
                 {
-                    for(int target = 0; target < numCourses; target++)
+                    for (int target = 0; target < numCourses; target++)
                     {
                         bool prerequisite = isPrerequisite[src][target] ||
                             (isPrerequisite[src][intermediate] && isPrerequisite[intermediate][target]);
@@ -5371,19 +5371,19 @@ namespace Solutions
             for (int i = 0; i < m; i++)
                 visited[i] = new bool[n];
 
-            for(int i = 0; i < m; i++)
+            for (int i = 0; i < m; i++)
             {
-                for(int j = 0; j < n; j++)
+                for (int j = 0; j < n; j++)
                 {
                     if (grid[i][j] > 0 && !visited[i][j])
                     {
                         int fish = 0;
                         visited[i][j] = true;
-                        
+
                         Stack<(int row, int col)> cells = new Stack<(int, int)>();
                         cells.Push((i, j));
-                        
-                        while(cells.Any())
+
+                        while (cells.Any())
                         {
                             var currentCell = cells.Pop();
                             int row = currentCell.row;
@@ -5392,7 +5392,7 @@ namespace Solutions
                             fish += grid[row][col];
 
                             if (row - 1 >= 0 && !visited[row - 1][col] && grid[row - 1][col] > 0)
-                            { 
+                            {
                                 cells.Push((row - 1, col));
                                 visited[row - 1][col] = true;
                             }
@@ -5407,7 +5407,7 @@ namespace Solutions
                                 visited[row][col - 1] = true;
                             }
                             if (col + 1 < n && !visited[row][col + 1] && grid[row][col + 1] > 0)
-                            { 
+                            {
                                 cells.Push((row, col + 1));
                                 visited[row][col + 1] = true;
                             }
@@ -5435,7 +5435,7 @@ namespace Solutions
             {
                 islandScore.Add(island.Key, island.Value.Count());
 
-                foreach(var cell in island.Value)
+                foreach (var cell in island.Value)
                     grid[cell.row][cell.col] = island.Key;
             }
 
@@ -5464,13 +5464,13 @@ namespace Solutions
                 }
 
                 foreach (int islandKey in usedIslands)
-                    possibleScore += islandScore[islandKey]; 
+                    possibleScore += islandScore[islandKey];
 
                 maxIslandSize = Math.Max(maxIslandSize, possibleScore);
             }
 
             return maxIslandSize + 1;
-        }        
+        }
         private static (List<(int row, int col)> waters, Dictionary<int, HashSet<(int row, int col)>> islands) GetData(int[][] grid)
         {
             int m = grid.Length;
@@ -5533,6 +5533,32 @@ namespace Solutions
             }
 
             return (water, islands);
+        }
+        public static int TupleSameProduct(int[] nums)
+        {
+            int result = 0;
+
+            Dictionary<int, int> productsFrequency = new Dictionary<int, int>();
+            for(int i = 0; i < nums.Length; i++)
+            {
+                for(int j = i+1; j < nums.Length; j++)
+                {
+                    int product = nums[i] * nums[j];
+
+                    if (!productsFrequency.ContainsKey(product))
+                        productsFrequency.Add(product, 0);
+
+                    productsFrequency[product]++;
+                }
+            }
+            ;
+            foreach (int freq in productsFrequency.Values.Where(v => v > 2))
+            {
+                if (freq > 1)
+                    result += freq * (freq - 1) * 4;
+            }
+            
+            return result;
         }
     }
 }
