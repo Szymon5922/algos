@@ -5560,5 +5560,161 @@ namespace Solutions
             
             return result;
         }
+        public class NumberContainers
+        {
+            private Dictionary<int, int> _indexes;
+            private Dictionary<int, SortedSet<int>> _numbers;
+            public NumberContainers()
+            {
+                _numbers = new Dictionary<int, SortedSet<int>>();
+                _indexes = new Dictionary<int, int>();
+            }
+            public void Change(int index, int number)
+            {
+                if(_indexes.ContainsKey(index))
+                {
+                    int prevNum = _indexes[index];
+
+                    _indexes[index] = number;
+
+                    if (!_numbers.ContainsKey(number))
+                        _numbers.Add(number, new SortedSet<int> { index });
+                    else
+                        _numbers[number].Add(index);
+
+                    if(prevNum!=number)
+                    {
+                        _numbers[prevNum].Remove(index);
+
+                        if (_numbers[prevNum].Count == 0)
+                            _numbers.Remove(prevNum);
+                    }
+                }
+                else
+                {
+                    _indexes.Add(index, number);
+
+                    if (!_numbers.ContainsKey(number))
+                        _numbers.Add(number, new SortedSet<int> { index });
+                    else
+                        _numbers[number].Add(index);
+                }
+            }
+            public int Find(int number)
+            {
+                if (_numbers.ContainsKey(number))
+                    return _numbers[number].First();
+                else
+                    return -1;
+            }
+        }
+        public class ProductOfNumbers
+        {
+            private int _currentProduct;
+            private int _size;
+            private List<int> _productPrefixes;
+            public ProductOfNumbers()
+            {
+                _currentProduct = 1;
+                _size = 0;
+                _productPrefixes = new List<int> { 1 };
+            }
+            public void Add(int num)
+            {
+                if (num != 0)
+                {
+                    _productPrefixes.Add(num * _productPrefixes.Last());
+                    _size++;
+                }    
+                else
+                {
+                    _size = 0;
+                    _productPrefixes.Clear();
+                    _productPrefixes.Add(1);
+                }
+            }
+            public int GetProduct(int k)
+            {
+                if (k >= _productPrefixes.Count)
+                    return 0;
+
+                return _productPrefixes.Last() / _productPrefixes[_size - k];
+            }
+        }
+        public static int PunishmentNumber(int n)
+        {
+            int punishmentNum = 0;
+            bool isAlreadyAdded = false;
+
+            for(int i = 1; i <= n; i++)
+            {
+                if(i % 9 == 0 || i % 9 == 1)
+                {
+                    isAlreadyAdded = false;
+                    int pow = i * i;
+                    GenerateSplits(pow.ToString(), 0, new List<string>(), i);
+                }
+            }
+
+            return punishmentNum;
+            
+            void GenerateSplits(string s, int index, List<string> current, int target)
+            {
+                if (isAlreadyAdded)
+                    return;
+
+                if(index==s.Length)
+                {
+                    int sum = 0;
+                    foreach(string num in current)
+                        sum += int.Parse(num);
+
+                    if (sum == target)
+                    { 
+                        punishmentNum += target * target;
+                        isAlreadyAdded = true;
+                    }
+
+                    return;
+                }
+                for(int end = index+1;end <= s.Length;end++)
+                {
+                    current.Add(s.Substring(index,end-index));
+                    GenerateSplits(s, end, current, target);
+                    current.RemoveAt(current.Count - 1);
+                }
+            }
+        }
+        public static string FindDifferentBinaryString(string[] nums)
+        {
+            int n = nums.Length;
+            HashSet<int> convertedNums = new HashSet<int>();
+
+            foreach(string num in nums)
+            {
+                int convertedNum = 0;
+
+                for(int i = num.Length-1, j = 0; i >= 0; i--, j++)
+                {
+                    if (num[i] == '1')
+                        convertedNum += (int)Math.Pow(2, j);
+                }
+
+                convertedNums.Add(convertedNum);
+            }
+
+            string numNotInNums = null;
+
+            for(int i = 0; i <= n; i++)
+            {
+                if (!convertedNums.Contains(i))
+                    numNotInNums = Convert.ToString(i, 2);
+            }
+
+            while (numNotInNums.Length < n)
+                numNotInNums = "0" + numNotInNums;
+
+            return numNotInNums;
+        }
     }
 }
