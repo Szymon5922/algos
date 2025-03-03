@@ -5716,5 +5716,54 @@ namespace Solutions
 
             return numNotInNums;
         }
+        public static int[] ApplyOperations(int[] nums)
+        {
+            for(int i = 0; i < nums.Length-1; i++)
+            {
+                if (nums[i] == nums[i+1])
+                {
+                    nums[i] *= 2;
+                    nums[i + 1] = 0;
+                }
+            }
+
+            for(int i = 0; i < nums.Length; i++)
+            {
+                if (nums[i] == 0)
+                {
+                    for(int j = i + 1; j < nums.Length; j++)
+                    {
+                        if(nums[j] != 0)
+                        {
+                            nums[i] = nums[j];
+                            nums[j] = 0;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return nums;
+        }
+        public static int[][] MergeArrays(int[][] nums1, int[][] nums2)
+        {
+            List<int[]> tmpArrays = new List<int[]> { };
+            tmpArrays.AddRange(nums1.ToList());
+            tmpArrays.AddRange(nums2.ToList());
+            var groupedNums = tmpArrays.GroupBy(n => n[0]).OrderBy(g=>g.Key);
+            int[][] mergedArrays = new int[groupedNums.Count()][];
+
+            int i = 0;
+            foreach(var group in groupedNums)
+            {
+                int key = group.Key;
+                int value = group.Select(n => n[1]).Sum();
+
+                mergedArrays[i] = new int[] { key, value };
+                i++;
+            }
+
+            return mergedArrays;
+        }
     }
 }
